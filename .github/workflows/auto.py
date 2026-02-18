@@ -2,12 +2,14 @@ import os
 import asyncio
 import random
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 
+# GitHub Secrets orqali olinadigan ma'lumotlar
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
-session = os.environ["SESSION"]
+session_str = os.environ["SESSION"]
 
-# Botlar
+# Botlar ro'yxati
 bots = [
     "Transcript_robot",
     "SHodlikAIbot",
@@ -17,16 +19,22 @@ bots = [
     "TTSpro_robot"
 ]
 
-# Random so‘zlar (xohlasangiz ko‘paytiring)
+# 50 ta random so'zlar ro'yxati
 words = [
-    "salom", "hello", "test", "ping", "start",
-    "word", "random", "hi", "ok", "run"
+    "salom", "qalaysiz", "ishlar yaxshimi", "nima gap", "hello", "hi", "test", "ping", 
+    "start", "word", "random", "ok", "run", "python", "telegram", "bot", "coding", 
+    "uzbekistan", "tashkent", "namangan", "andijon", "fargona", "samarqand", "buxoro", 
+    "xiva", "termiz", "navoiy", "jizzax", "guliston", "nukus", "dunyo", "quyosh", 
+    "osmon", "yulduz", "oy", "kitob", "ilm", "maktab", "universitet", "dars", 
+    "ustoz", "shogird", "omad", "baxt", "shodlik", "tabassum", "quvonch", "mehr", 
+    "do'st", "aka", "uka", "opa", "singil"
 ]
 
-# Xato signal boradigan user
+# Xato haqida xabar boradigan user
 alert_chat = os.environ.get("ALERT_CHAT", "Otavaliyev_M")
 
-client = TelegramClient(session, api_id, api_hash)
+# Tuzatilgan qism: StringSession ishlatilgan
+client = TelegramClient(StringSession(session_str), api_id, api_hash)
 
 async def send_alert(msg):
     try:
@@ -35,7 +43,9 @@ async def send_alert(msg):
         pass
 
 async def main():
+    # Sessiyani boshlash
     await client.start()
+    print("Sessiya muvaffaqiyatli ishga tushdi!")
 
     for bot in bots:
         try:
@@ -43,12 +53,13 @@ async def main():
             await client.send_message(bot, text)
             print(f"Yuborildi -> {bot}: {text}")
 
-            # Random delay (anti-ban)
-            await asyncio.sleep(random.randint(10, 25))
+            # Random delay (anti-ban uchun 15 dan 40 soniyagacha)
+            await asyncio.sleep(random.randint(15, 40))
 
         except Exception as e:
             err = f"{bot} -> {e}"
-            print("Xato:", err)
+            print("Xato yuz berdi:", err)
             await send_alert(err)
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
