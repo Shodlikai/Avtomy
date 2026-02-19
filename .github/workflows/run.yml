@@ -2,8 +2,12 @@ name: Telegram Auto Sender
 
 on:
   schedule:
-    - cron: "0 * * * *"   # har 1 soat
+    - cron: "*/30 * * * *"  # Har 30 minutda tekshiradi
   workflow_dispatch:
+
+concurrency:
+  group: telegram-sender
+  cancel-in-progress: false
 
 jobs:
   run:
@@ -28,3 +32,4 @@ jobs:
           SESSION: ${{ secrets.SESSION }}
           ALERT_CHAT: ${{ secrets.ALERT_CHAT }}
         run: python auto.py
+        
