@@ -2,12 +2,12 @@ name: Telegram Auto Sender
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Har 1 soatda bir marta botni uyg'otadi
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 concurrency:
   group: telegram-sender
-  cancel-in-progress: true # Agar oldingi bot hali ishini tugatmagan bo'lsa, uni to'xtatadi
+  cancel-in-progress: true
 
 jobs:
   run:
@@ -27,5 +27,6 @@ jobs:
           API_HASH: ${{ secrets.API_HASH }}
           SESSION: ${{ secrets.SESSION }}
           ALERT_CHAT: ${{ secrets.ALERT_CHAT }}
+          EVENT_NAME: ${{ github.event_name }}  # QO'SHILGAN QATOR
         run: python auto.py
         
