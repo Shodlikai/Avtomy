@@ -4,13 +4,13 @@ import random
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 
-# 1. GitHub Secrets orqali ma'lumotlarni olish
+# GitHub Secrets orqali olinadigan ma'lumotlar
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
 session_str = os.environ["SESSION"]
 alert_chat = os.environ.get("ALERT_CHAT", "Otavaliyev_M")
 
-# 2. Xabar yuboriladigan botlar va sizning profilingiz
+# Botlar va profilingiz
 targets = [
     "Transcript_robot",
     "SHodlikAIbot",
@@ -21,7 +21,7 @@ targets = [
     "Otavaliyev_M"
 ]
 
-# 3. Random so'zlar ro'yxati
+# Tasodifiy so'zlar ro'yxati
 words = [
     "salom", "qalaysiz", "ishlar yaxshimi", "nima gap", "hello", "hi", "test", "ping", 
     "start", "word", "random", "ok", "run", "python", "telegram", "bot", "coding", 
@@ -32,16 +32,16 @@ words = [
     "do'st", "aka", "uka", "opa", "singil"
 ]
 
-# 4. Siz aytgan aniq intervallar (daqiqalarda)
+# Intervallar (daqiqalarda)
 intervals = [45, 50, 55, 47, 62, 58]
 
-# 5. ASOSIY TUZATISH: StringSession qavs ichida bo'lishi shart!
+# ASOSIY TUZATILGAN QISM: session_str maxsus StringSession qavsiga olingan!
 client = TelegramClient(StringSession(session_str), api_id, api_hash)
 
 async def send_alert(msg):
-    """Xatolik yuz bersa sizga xabar yuboradi"""
+    """Xatolik yuz bersa xabar beradi"""
     try:
-        await client.send_message(alert_chat, f"🚨 **MUAMMO YUZ BERDI:**\n\n`{msg}`")
+        await client.send_message(alert_chat, f"🚨 MUAMMO YUZ BERDI:\n\n{msg}")
     except Exception as e:
         print(f"Alert yuborishda xato: {e}")
 
@@ -50,27 +50,25 @@ async def main():
         # Sessiyani boshlash
         await client.start()
         
-        # Ro'yxatdan bitta vaqtni tanlab, o'sha daqiqa davomida kutamiz
+        # Tanlangan vaqtni kutish
         wait_min = random.choice(intervals)
-        print(f"Tanlangan interval: {wait_min} daqiqa. Kutish boshlandi...")
+        print(f"Bot {wait_min} daqiqadan keyin xabar yuborishni boshlaydi...")
         await asyncio.sleep(wait_min * 60)
 
         for target in targets:
-            # Har bir target uchun alohida random so'z
             random_word = random.choice(words)
             try:
                 await client.send_message(target, random_word)
                 print(f"✅ {target} ga '{random_word}' yuborildi.")
-                # Qisqa tanaffus (spam filtrga tushmaslik uchun)
+                # Bot bloklanmasligi uchun qisqa pauza (5-10 soniya)
                 await asyncio.sleep(random.randint(5, 10))
             except Exception as e:
-                err = f"{target} ga yuborishda xato: {str(e)}"
-                print(f"❌ {err}")
-                await send_alert(err)
+                err_msg = f"{target} ga yuborishda xato: {str(e)}"
+                print(f"❌ {err_msg}")
+                await send_alert(err_msg)
 
     except Exception as e:
-        print(f"Kritik xato yuz berdi: {e}")
-        await send_alert(f"Bot to'liq to'xtadi. Xato: {str(e)}")
+        await send_alert(f"Bot butunlay to'xtadi: {str(e)}")
     finally:
         await client.disconnect()
 
