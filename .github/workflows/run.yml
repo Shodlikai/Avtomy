@@ -2,29 +2,25 @@ name: Telegram Auto Sender
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # Har 30 minutda tekshiradi
+    - cron: "0 * * * *"  # Har 1 soatda bir marta botni uyg'otadi
   workflow_dispatch:
 
 concurrency:
   group: telegram-sender
-  cancel-in-progress: false
+  cancel-in-progress: true # Agar oldingi bot hali ishini tugatmagan bo'lsa, uni to'xtatadi
 
 jobs:
   run:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Python o‘rnatish
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Kutubxonalar
         run: pip install -r requirements.txt
-
       - name: Ishga tushirish
         env:
           API_ID: ${{ secrets.API_ID }}
