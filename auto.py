@@ -4,42 +4,29 @@ import random
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 
-# GitHub Secrets orqali olinadigan ma'lumotlar
+# GitHub Secrets
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
 session_str = os.environ["SESSION"]
 alert_chat = os.environ.get("ALERT_CHAT", "Otavaliyev_M")
+event_name = os.environ.get("EVENT_NAME", "") # Qanday ishga tushgani
 
-# Botlar va profilingiz
 targets = [
-    "Transcript_robot",
-    "SHodlikAIbot",
-    "Hammaga_javobot",
-    "Longmanrobot",
-    "teacher_tutorbot",
-    "TTSpro_robot",
-    "Otavaliyev_M"
+    "Transcript_robot", "SHodlikAIbot", "Hammaga_javobot", 
+    "Longmanrobot", "teacher_tutorbot", "TTSpro_robot", "Otavaliyev_M"
 ]
 
-# Tasodifiy so'zlar ro'yxati
 words = [
-    "salom", "qalaysiz", "ishlar yaxshimi", "nima gap", "hello", "hi", "test", "ping", 
-    "start", "word", "random", "ok", "run", "python", "telegram", "bot", "coding", 
-    "uzbekistan", "tashkent", "namangan", "andijon", "fargona", "samarqand", "buxoro", 
-    "xiva", "termiz", "navoiy", "jizzax", "guliston", "nukus", "dunyo", "quyosh", 
-    "osmon", "yulduz", "oy", "kitob", "ilm", "maktab", "universitet", "dars", 
-    "ustoz", "shogird", "omad", "baxt", "shodlik", "tabassum", "quvonch", "mehr", 
-    "do'st", "aka", "uka", "opa", "singil"
+    "salom", "qalaysiz", "ishlar yaxshimi", "hello", "hi", "test", "ping", 
+    "start", "ok", "run", "python", "telegram", "bot", "coding", 
+    "uzbekistan", "tashkent", "quyosh", "osmon", "kitob", "ilm", "omad"
 ]
 
-# Intervallar (daqiqalarda)
 intervals = [45, 50, 55, 47, 62, 58]
 
-# ASOSIY TUZATILGAN QISM: session_str maxsus StringSession qavsiga olingan!
 client = TelegramClient(StringSession(session_str), api_id, api_hash)
 
 async def send_alert(msg):
-    """Xatolik yuz bersa xabar beradi"""
     try:
         await client.send_message(alert_chat, f"🚨 MUAMMO YUZ BERDI:\n\n{msg}")
     except Exception as e:
@@ -47,12 +34,16 @@ async def send_alert(msg):
 
 async def main():
     try:
-        # Sessiyani boshlash
         await client.start()
         
-        # Tanlangan vaqtni kutish
-        wait_min = random.choice(intervals)
-        print(f"Bot {wait_min} daqiqadan keyin xabar yuborishni boshlaydi...")
+        # QANDAY ISHGA TUSHGANINI TEKSHIRISH
+        if event_name == "workflow_dispatch":
+            wait_min = 0
+            print("⚡️ Qo'lda ishga tushirildi: Kutish bekor qilindi, darhol xabar yuboriladi!")
+        else:
+            wait_min = random.choice(intervals)
+            print(f"⏳ Avtomatik ishga tushdi: {wait_min} daqiqa kutish boshlandi...")
+            
         await asyncio.sleep(wait_min * 60)
 
         for target in targets:
@@ -60,7 +51,7 @@ async def main():
             try:
                 await client.send_message(target, random_word)
                 print(f"✅ {target} ga '{random_word}' yuborildi.")
-                # Bot bloklanmasligi uchun qisqa pauza (5-10 soniya)
+                # Spam himoyasi
                 await asyncio.sleep(random.randint(5, 10))
             except Exception as e:
                 err_msg = f"{target} ga yuborishda xato: {str(e)}"
