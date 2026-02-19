@@ -22,7 +22,7 @@ words = [
     "uzbekistan", "tashkent", "quyosh", "osmon", "kitob", "ilm", "omad"
 ]
 
-intervals = [45, 50, 55, 47, 62, 58]
+intervals = [5, 20, 45, 47, 38, 51]
 
 client = TelegramClient(StringSession(session_str), api_id, api_hash)
 
@@ -66,3 +66,4 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
     
+
